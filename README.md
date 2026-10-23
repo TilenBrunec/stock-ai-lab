@@ -33,7 +33,7 @@ Razlogi za posamezne izbire so zapisani v [arhitekturnih odločitvah](docs/adr/R
 | [03 – Podatkovni model](docs/03-podatkovni-model.md) | Entitete in povezave |
 | [04 – Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md) | Zgradba sistema in tehnologije |
 | [05 – Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md) | 15 uporabniških zgodb z acceptance criteria |
-| [05 – Wireframes](docs/05-wireframes.md) | Osnutki ključnih zaslonov |
+| [05 – Wireframes](docs/06-wireframes.md) | Osnutki ključnih zaslonov |
 | [Arhitekturne odločitve (ADR)](docs/adr/README.md) | Zakaj smo izbrali posamezne rešitve |
 
 ## Struktura repozitorija
