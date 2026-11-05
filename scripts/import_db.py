@@ -11,7 +11,7 @@ Povezava se prebere iz okoljske spremenljivke DATABASE_URL, npr.:
     postgresql://postgres.<ref>:<geslo>@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
 
 Uporaba (iz root mape):
-    $env:DATABASE_URL = "postgresql://..."      # PowerShell
+    v .env (root, ni v gitu) zapiši: DATABASE_URL=postgresql://...
     python scripts/import_db.py
 """
 
@@ -32,6 +32,19 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger("import_db")
 
 
+def load_env_file() -> None:
+    """Prebere .env iz root mape (KLJUC=vrednost), če obstaja. Že nastavljene spremenljivke imajo prednost."""
+    env = ROOT / ".env"
+    if not env.exists():
+        return
+    for line in env.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
 def read_instruments() -> list[tuple[str, str, str]]:
     with TICKERS_CSV.open(encoding="utf-8") as f:
         return [(r["ticker"].strip(), r["ime"].strip(), r["tip"].strip()) for r in csv.DictReader(f)]
@@ -43,9 +56,10 @@ def tickers_with_prices() -> set[str]:
 
 
 def main() -> int:
+    load_env_file()
     url = os.environ.get("DATABASE_URL")
     if not url:
-        log.error("Nastavi okoljsko spremenljivko DATABASE_URL")
+        log.error("Nastavi DATABASE_URL v .env (root mapa) ali kot okoljsko spremenljivko")
         return 1
     if url.startswith("jdbc:"):
         log.error("DATABASE_URL ne sme imeti 'jdbc:' na začetku (to je format za Javo)")
@@ -72,6 +86,23 @@ def main() -> int:
             )
             cur.execute("SELECT count(*) FROM stock")
             log.info("Instrumentov v bazi: %d", cur.fetchone()[0])
+
+            # 1b) anonimne oznake (#7): samo instrumenti brez oznake, v naključnem vrstnem redu,
+            #     številčenje nadaljuje od največje obstoječe -> obstoječe oznake se ne spremenijo
+            cur.execute("""
+                WITH n AS (
+                    SELECT coalesce(max(substring(anon_oznaka FROM 2)::int), 0) AS m
+                    FROM stock WHERE anon_oznaka IS NOT NULL
+                ), t AS (
+                    SELECT id, row_number() OVER (ORDER BY random()) AS rn
+                    FROM stock WHERE anon_oznaka IS NULL
+                )
+                UPDATE stock s
+                SET anon_oznaka = 'S' || lpad((n.m + t.rn)::text, 3, '0')
+                FROM t, n
+                WHERE s.id = t.id
+            """)
+            log.info("Novih anonimnih oznak: %d", cur.rowcount)
 
             # 2) cene: COPY v začasno tabelo, nato en INSERT z ON CONFLICT
             cur.execute(
