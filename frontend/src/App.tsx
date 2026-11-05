@@ -1,12 +1,9 @@
-
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import StockListPage from './pages/StockListPage';
 
-
-function StockListPage() { return <h1>Instrumenti</h1>; }        // pride v #14
 function StockDetailPage() { return <h1>Instrument</h1>; }       // pride v #15
 
 export default function App() {
-  
   return (
     <BrowserRouter>
       <Routes>
