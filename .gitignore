@@ -21,3 +21,9 @@ node_modules/
 coverage/
 create-issues.ps1
 branches.txt
+
+data/raw/
+data/clean/
+
+.venv/
+__pycache__/

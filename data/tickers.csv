@@ -1,0 +1,228 @@
+ticker,ime,tip
+AAPL,Apple,DELNICA
+MSFT,Microsoft,DELNICA
+GOOGL,Alphabet,DELNICA
+AMZN,Amazon,DELNICA
+META,Meta Platforms,DELNICA
+NVDA,NVIDIA,DELNICA
+TSLA,Tesla,DELNICA
+NFLX,Netflix,DELNICA
+ADBE,Adobe,DELNICA
+ORCL,Oracle,DELNICA
+CSCO,Cisco Systems,DELNICA
+INTC,Intel,DELNICA
+IBM,IBM,DELNICA
+QCOM,Qualcomm,DELNICA
+TXN,Texas Instruments,DELNICA
+AMD,Advanced Micro Devices,DELNICA
+MU,Micron Technology,DELNICA
+AVGO,Broadcom,DELNICA
+CRM,Salesforce,DELNICA
+ACN,Accenture,DELNICA
+HPQ,HP Inc,DELNICA
+XRX,Xerox,DELNICA
+NOK,Nokia,DELNICA
+ERIC,Ericsson,DELNICA
+SONY,Sony Group,DELNICA
+EBAY,eBay,DELNICA
+PYPL,PayPal,DELNICA
+INTU,Intuit,DELNICA
+ADP,Automatic Data Processing,DELNICA
+AMAT,Applied Materials,DELNICA
+LRCX,Lam Research,DELNICA
+KLAC,KLA Corporation,DELNICA
+ADI,Analog Devices,DELNICA
+SNPS,Synopsys,DELNICA
+CDNS,Cadence Design Systems,DELNICA
+NTAP,NetApp,DELNICA
+WDC,Western Digital,DELNICA
+STX,Seagate Technology,DELNICA
+BB,BlackBerry,DELNICA
+GLW,Corning,DELNICA
+EA,Electronic Arts,DELNICA
+TTWO,Take-Two Interactive,DELNICA
+SNAP,Snap,DELNICA
+UBER,Uber Technologies,DELNICA
+VZ,Verizon,DELNICA
+T,AT&T,DELNICA
+TMUS,T-Mobile US,DELNICA
+CMCSA,Comcast,DELNICA
+CHTR,Charter Communications,DELNICA
+LUMN,Lumen Technologies,DELNICA
+DIS,Walt Disney,DELNICA
+WBD,Warner Bros Discovery,DELNICA
+SIRI,Sirius XM,DELNICA
+JPM,JPMorgan Chase,DELNICA
+BAC,Bank of America,DELNICA
+C,Citigroup,DELNICA
+WFC,Wells Fargo,DELNICA
+GS,Goldman Sachs,DELNICA
+MS,Morgan Stanley,DELNICA
+AIG,American International Group,DELNICA
+MET,MetLife,DELNICA
+PRU,Prudential Financial,DELNICA
+AXP,American Express,DELNICA
+V,Visa,DELNICA
+MA,Mastercard,DELNICA
+BLK,BlackRock,DELNICA
+SCHW,Charles Schwab,DELNICA
+USB,US Bancorp,DELNICA
+PNC,PNC Financial,DELNICA
+COF,Capital One,DELNICA
+BK,Bank of New York Mellon,DELNICA
+BRK-B,Berkshire Hathaway,DELNICA
+ALL,Allstate,DELNICA
+TRV,Travelers,DELNICA
+JNJ,Johnson & Johnson,DELNICA
+PFE,Pfizer,DELNICA
+MRK,Merck,DELNICA
+ABBV,AbbVie,DELNICA
+ABT,Abbott Laboratories,DELNICA
+BMY,Bristol-Myers Squibb,DELNICA
+LLY,Eli Lilly,DELNICA
+AMGN,Amgen,DELNICA
+GILD,Gilead Sciences,DELNICA
+BIIB,Biogen,DELNICA
+TEVA,Teva Pharmaceutical,DELNICA
+CVS,CVS Health,DELNICA
+UNH,UnitedHealth Group,DELNICA
+CI,Cigna,DELNICA
+MDT,Medtronic,DELNICA
+BAX,Baxter International,DELNICA
+WBA,Walgreens Boots Alliance,DELNICA
+ZBH,Zimmer Biomet,DELNICA
+BDX,Becton Dickinson,DELNICA
+SYK,Stryker,DELNICA
+ISRG,Intuitive Surgical,DELNICA
+KO,Coca-Cola,DELNICA
+PEP,PepsiCo,DELNICA
+PG,Procter & Gamble,DELNICA
+WMT,Walmart,DELNICA
+COST,Costco,DELNICA
+TGT,Target,DELNICA
+HD,Home Depot,DELNICA
+LOW,Lowe's,DELNICA
+MCD,McDonald's,DELNICA
+SBUX,Starbucks,DELNICA
+NKE,Nike,DELNICA
+KHC,Kraft Heinz,DELNICA
+MO,Altria,DELNICA
+PM,Philip Morris International,DELNICA
+CL,Colgate-Palmolive,DELNICA
+KMB,Kimberly-Clark,DELNICA
+GIS,General Mills,DELNICA
+CPB,Campbell's,DELNICA
+KR,Kroger,DELNICA
+M,Macy's,DELNICA
+KSS,Kohl's,DELNICA
+VFC,VF Corporation,DELNICA
+UAA,Under Armour,DELNICA
+TPR,Tapestry,DELNICA
+RL,Ralph Lauren,DELNICA
+HAS,Hasbro,DELNICA
+MAT,Mattel,DELNICA
+NWL,Newell Brands,DELNICA
+CLX,Clorox,DELNICA
+EL,Estee Lauder,DELNICA
+F,Ford Motor,DELNICA
+GM,General Motors,DELNICA
+HOG,Harley-Davidson,DELNICA
+GT,Goodyear Tire,DELNICA
+CCL,Carnival,DELNICA
+RCL,Royal Caribbean,DELNICA
+NCLH,Norwegian Cruise Line,DELNICA
+MAR,Marriott International,DELNICA
+LVS,Las Vegas Sands,DELNICA
+WYNN,Wynn Resorts,DELNICA
+MGM,MGM Resorts,DELNICA
+AAL,American Airlines,DELNICA
+UAL,United Airlines,DELNICA
+DAL,Delta Air Lines,DELNICA
+LUV,Southwest Airlines,DELNICA
+BKNG,Booking Holdings,DELNICA
+YUM,Yum! Brands,DELNICA
+DPZ,Domino's Pizza,DELNICA
+CMG,Chipotle Mexican Grill,DELNICA
+LULU,Lululemon,DELNICA
+GME,GameStop,DELNICA
+AMC,AMC Entertainment,DELNICA
+GE,General Electric,DELNICA
+BA,Boeing,DELNICA
+MMM,3M,DELNICA
+CAT,Caterpillar,DELNICA
+DE,Deere & Company,DELNICA
+HON,Honeywell,DELNICA
+LMT,Lockheed Martin,DELNICA
+RTX,RTX Corporation,DELNICA
+GD,General Dynamics,DELNICA
+NOC,Northrop Grumman,DELNICA
+UPS,United Parcel Service,DELNICA
+FDX,FedEx,DELNICA
+UNP,Union Pacific,DELNICA
+CSX,CSX,DELNICA
+NSC,Norfolk Southern,DELNICA
+EMR,Emerson Electric,DELNICA
+ITW,Illinois Tool Works,DELNICA
+WM,Waste Management,DELNICA
+XOM,Exxon Mobil,DELNICA
+CVX,Chevron,DELNICA
+COP,ConocoPhillips,DELNICA
+OXY,Occidental Petroleum,DELNICA
+SLB,Schlumberger,DELNICA
+HAL,Halliburton,DELNICA
+APA,APA Corporation,DELNICA
+DVN,Devon Energy,DELNICA
+EOG,EOG Resources,DELNICA
+BP,BP,DELNICA
+KMI,Kinder Morgan,DELNICA
+FCX,Freeport-McMoRan,DELNICA
+NEM,Newmont,DELNICA
+NUE,Nucor,DELNICA
+CLF,Cleveland-Cliffs,DELNICA
+VALE,Vale,DELNICA
+RIO,Rio Tinto,DELNICA
+BHP,BHP Group,DELNICA
+NEE,NextEra Energy,DELNICA
+DUK,Duke Energy,DELNICA
+SO,Southern Company,DELNICA
+D,Dominion Energy,DELNICA
+EXC,Exelon,DELNICA
+AMT,American Tower,DELNICA
+SPG,Simon Property Group,DELNICA
+O,Realty Income,DELNICA
+SPY,SPDR S&P 500 ETF,SKLAD
+IVV,iShares Core S&P 500 ETF,SKLAD
+VOO,Vanguard S&P 500 ETF,SKLAD
+VTI,Vanguard Total Stock Market ETF,SKLAD
+QQQ,Invesco QQQ Trust,SKLAD
+DIA,SPDR Dow Jones Industrial Average ETF,SKLAD
+IWM,iShares Russell 2000 ETF,SKLAD
+VEA,Vanguard FTSE Developed Markets ETF,SKLAD
+VGK,Vanguard FTSE Europe ETF,SKLAD
+EFA,iShares MSCI EAFE ETF,SKLAD
+VWO,Vanguard FTSE Emerging Markets ETF,SKLAD
+EEM,iShares MSCI Emerging Markets ETF,SKLAD
+EWJ,iShares MSCI Japan ETF,SKLAD
+EWG,iShares MSCI Germany ETF,SKLAD
+EWZ,iShares MSCI Brazil ETF,SKLAD
+FXI,iShares China Large-Cap ETF,SKLAD
+AGG,iShares Core US Aggregate Bond ETF,SKLAD
+BND,Vanguard Total Bond Market ETF,SKLAD
+TLT,iShares 20+ Year Treasury Bond ETF,SKLAD
+IEF,iShares 7-10 Year Treasury Bond ETF,SKLAD
+SHY,iShares 1-3 Year Treasury Bond ETF,SKLAD
+LQD,iShares iBoxx Investment Grade Corporate Bond ETF,SKLAD
+HYG,iShares iBoxx High Yield Corporate Bond ETF,SKLAD
+GLD,SPDR Gold Shares,SKLAD
+SLV,iShares Silver Trust,SKLAD
+USO,United States Oil Fund,SKLAD
+VNQ,Vanguard Real Estate ETF,SKLAD
+XLK,Technology Select Sector SPDR,SKLAD
+XLF,Financial Select Sector SPDR,SKLAD
+XLE,Energy Select Sector SPDR,SKLAD
+XLV,Health Care Select Sector SPDR,SKLAD
+XLY,Consumer Discretionary Select Sector SPDR,SKLAD
+XLP,Consumer Staples Select Sector SPDR,SKLAD
+XLI,Industrial Select Sector SPDR,SKLAD
+XLU,Utilities Select Sector SPDR,SKLAD
+XLB,Materials Select Sector SPDR,SKLAD
