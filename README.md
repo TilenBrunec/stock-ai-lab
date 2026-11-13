@@ -328,6 +328,20 @@ Uvozi podatke v Supabase (tabeli `stock` in `stock_price`) in dodeli anonimne oz
 V Supabase **Table Editor** preveri, da imata tabeli `stock` in `stock_price` podatke.
 
 ---
+## Prijava z Google (Supabase Auth)
+
+Enkratna nastavitev (skrivnosti niso v repozitoriju):
+
+1. Google Cloud Console → nov projekt → OAuth consent screen (External, testni uporabniki).
+2. Clients → Web application:
+   - Authorized JavaScript origins: `http://localhost:5173`
+   - Authorized redirect URI: `https://<ref>.supabase.co/auth/v1/callback`
+3. Supabase → Authentication → Providers → Google: vklopi, vpiši Client ID in Client secret.
+4. Supabase → Authentication → URL Configuration:
+   - Site URL `http://localhost:5173`
+   - Redirect URL `http://localhost:5173/**`
+5. Supabase → Project Settings → JWT Keys: projekt mora uporabljati asimetrične ključe
+   (JWKS na `https://<ref>.supabase.co/auth/v1/.well-known/jwks.json` ni prazen).
 
 ## 7. Frontend (prvič)
 
