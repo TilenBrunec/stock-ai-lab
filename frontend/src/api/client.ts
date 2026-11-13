@@ -1,21 +1,53 @@
-import type { Price, Stock } from '../types/types';
+import { supabase } from '../config/supabase';
+import type { Me, Price, Stock } from '../types/types';
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
-async function get<T>(path: string, params?: Record<string, string | undefined>): Promise<T> {
+export class ApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
+async function authHeader(): Promise<Record<string, string>> {
+  const { data } = await supabase.auth.getSession();   // po potrebi sam osveži žeton
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request<T>(
+  method: string,
+  path: string,
+  options: { params?: Record<string, string | undefined>; body?: unknown } = {},
+): Promise<T> {
   const url = new URL(path, API_URL);
-  Object.entries(params ?? {}).forEach(([k, v]) => {
+  Object.entries(options.params ?? {}).forEach(([k, v]) => {
     if (v) url.searchParams.set(k, v);
   });
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`);
+
+  const headers: Record<string, string> = { ...(await authHeader()) };
+  if (options.body !== undefined) {
+    headers['Content-Type'] = 'application/json';
   }
-  return res.json() as Promise<T>;
+
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+  });
+
+  if (!res.ok) {
+    throw new ApiError(res.status, `${res.status} ${res.statusText}`);
+  }
+  return (res.status === 204 ? undefined : await res.json()) as T;
 }
 
 export const api = {
-  stocks: (q?: string) => get<Stock[]>('/api/stocks', { q }),
+  stocks: (q?: string) => request<Stock[]>('GET', '/api/stocks', { params: { q } }),
   prices: (id: number, from?: string, to?: string) =>
-    get<Price[]>(`/api/stocks/${id}/prices`, { from, to }),
+    request<Price[]>('GET', `/api/stocks/${id}/prices`, { params: { from, to } }),
+  me: () => request<Me>('GET', '/api/me'),
 };
