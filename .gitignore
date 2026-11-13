@@ -21,7 +21,9 @@ node_modules/
 coverage/
 create-issues.ps1
 branches.txt
+create-issues-faza2.ps1 
 
+create-issues-faza2.ps1
 data/raw/
 data/clean/
 
