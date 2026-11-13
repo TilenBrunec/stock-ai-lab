@@ -58,68 +58,347 @@ stock-ai-lab/
 └── .env                             DATABASE_URL za Python skripte (NI v gitu)
 ```
  
-## Konfiguracija (skrivnosti in povezave)
- 
-Gesla in connection stringi **nikoli** ne gredo v git. Vsak del ima svojo datoteko:
- 
-| Datoteka | Kdo jo bere | Kaj vsebuje | V gitu |
+# StockLab: navodila za namestitev in zagon
+
+Navodila za postavitev projekta na novem računalniku (Windows). Ukaze iz sivih blokov lahko kopiraš in prilepiš v terminal.
+
+V primerih je projekt v mapi `C:\RIRS`. Pri sebi to zamenjaj s potjo do svoje mape.
+
+---
+
+## 0. Potrebni programi
+
+Najprej namesti oba urejevalnika:
+
+| Program | Zakaj | Prenos |
+|---|---|---|
+| **IntelliJ IDEA** (Community ali Ultimate) | backend (Spring Boot) | https://www.jetbrains.com/idea/download/ |
+| **VS Code** | frontend, skripte, terminal | https://code.visualstudio.com/ |
+
+---
+
+## 1. Preverjanje orodij
+
+1. Na računalniku ustvari mapo, kjerkoli želiš (npr. `C:\RIRS`).
+2. Odpri jo v VS Code (**File → Open Folder**).
+3. Odpri terminal (**Terminal → New Terminal** ali `` Ctrl + ` ``) in zaženi:
+
+```powershell
+git --version
+java -version
+node -v
+npm -v
+python --version
+```
+![alt text](README-slike/image.png)  
+
+Vsak ukaz mora izpisati verzijo.
+Če katerega manjka ali je verzija prenizka, ga namesti:
+
+| Orodje | Najmanj | Prenos | Opomba |
 |---|---|---|---|
-| `backend/src/main/resources/application.properties` | Spring Boot | skupne nastavitve, sklic na `${DB_URL}`, `${DB_USER}`, `${DB_PASSWORD}` | da |
-| `backend/src/main/resources/application-local.properties` | Spring Boot (profil `local`) | povezava na Supabase (JDBC URL, uporabnik, geslo) | **ne** |
-| `.env` (root) | Python skripte v `scripts/` | `DATABASE_URL=postgresql://...` | **ne** |
-| `.env.example` (root) | ljudje | predloga za `.env` brez gesla | da |
-| `frontend/.env.local` | Vite (React) | `VITE_API_URL=http://localhost:8080` | **ne** |
- 
-Connection string dobiš v Supabase: **Connect → Session pooler** (port 5432).
- 
-- **Backend (Java)** rabi JDBC obliko, uporabnik in geslo sta ločena:
-  `jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require`
-- **Python** rabi obliko brez `jdbc:`, uporabnik in geslo sta v URL-ju:
-  `postgresql://postgres.<ref>:<geslo>@aws-1-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require`
-  Posebne znake v geslu je treba kodirati (`#` → `%23`, `!` → `%21`, `*` → `%2A`, `@` → `%40`).
-## Lokalni zagon
- 
-Predpogoji: Java 21+, Node.js 20+, Python 3.11+, Supabase projekt.
- 
-### 1. Backend
- 
-1. Ustvari `backend/src/main/resources/application-local.properties` s povezavo na Supabase.
-2. Zaženi s profilom `local`:
-```bash
-   cd backend
-   ./mvnw spring-boot:run -Dspring-boot.run.profiles=local      # Windows: .\mvnw.cmd ...
+| Git | katerakoli | https://git-scm.com/downloads | privzete nastavitve so OK |
+| Java (JDK) | **21** | https://adoptium.net/temurin/releases/?version=21 | izberi *Windows x64, JDK, .msi*; med namestitvijo vklopi *Set JAVA_HOME* |
+| Node.js (vsebuje npm) | **20** | https://nodejs.org/ | izberi *LTS* verzijo |
+| Python | **3.11** | https://www.python.org/downloads/ | na prvem zaslonu **obkljukaj "Add python.exe to PATH"** |
+
+Po namestitvi **zapri in ponovno odpri VS Code**, da terminal vidi nove programe, in ukaze zaženi še enkrat.
+
+---
+
+## 2. Kloniranje projekta
+
+V terminalu VS Code (v mapi, ki si jo ustvaril):
+
+```powershell
+git clone https://github.com/TilenBrunec/stock-ai-lab.git
+cd stock-ai-lab
+git checkout development
 ```
-3. Ob zagonu Flyway sam ustvari tabele (`db/migration`). V logu poišči `Successfully applied ... migration`.
-4. Preveri: <http://localhost:8080/api/actuator/health> mora vrniti `"status":"UP"`.
-### 2. Uvoz podatkov
- 
-Shema mora že obstajati, zato najprej enkrat zaženi backend.
- 
-```bash
+
+V VS Code zdaj odpri mapo `stock-ai-lab` (**File → Open Folder → stock-ai-lab**).
+
+---
+
+## 3. Supabase projekt (baza)
+
+1. Pojdi na https://supabase.com in klikni **Start your project**. Prijaviš se lahko z GitHub računom ali emailom.
+2. Če te vpraša, ustvari **organizacijo** (poljubno ime, plan **Free**).
+3. Klikni **New project** in izpolni:
+   - **Project name**: npr. `stocklab`
+   - **Database Password**: klikni **Generate a password** in ga **takoj nekam shrani**, ker ga boš rabil kasneje in ga Supabase ne pokaže več.
+     > Nasvet: geslo naj ima samo črke in številke. Posebni znaki (`#`, `!`, `@`, `*`) povzročajo težave v connection stringu.
+   - **Region**: **Central EU (Frankfurt)**
+4. Klikni **Create new project** in počakaj 1–2 minuti, da se projekt postavi.
+5. Tabel **ne ustvarjaj ročno**, ker jih ob prvem zagonu backenda ustvari Flyway.
+
+### Kje dobiš podatke za povezavo
+
+![alt text](README-slike/image-1.png) 
+![alt text](README-slike/image-2.png) 
+
+
+
+1. V projektu klikni gumb **Connect** (zgoraj na sredini).
+2. Izberi zavihek **Connection String**.
+3. Nastavi **Method: Session pooler** (ne *Direct connection*, ker ta na večini omrežij ne deluje).
+4. Prikaže se niz v tej obliki:
+
+```
+postgresql://postgres.abcdefghijklmnop:[YOUR-PASSWORD]@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
+```
+
+Iz njega rabiš tri podatke:
+
+| Podatek | Primer | Kje v nizu |
+|---|---|---|
+| **uporabnik** | `postgres.abcdefghijklmnop` | med `//` in `:` |
+| **host** | `aws-1-eu-central-1.pooler.supabase.com` | med `@` in `:5432` |
+| **geslo** | tisto, ki si ga shranil v koraku 3 | namesto `[YOUR-PASSWORD]` |
+
+> Host se lahko pri tebi malo razlikuje (npr. `aws-0-...`). Vedno uporabi tistega, ki ti ga pokaže Supabase.
+
+---
+
+## 4. Konfiguracijske datoteke
+
+Teh datotek ni v gitu, ker vsebujejo gesla, zato jih moraš ustvariti sam. Končna struktura:
+
+```
+stock-ai-lab/
+├── .env                                              ← (A) za Python skripte
+├── frontend/
+│   └── .env.local                                    ← (B) za frontend
+└── backend/
+    └── src/
+        └── main/
+            └── resources/
+                └── application-local.properties      ← (C) za backend
+```
+
+### (A) `stock-ai-lab/.env` za Python skripte
+
+V VS Code desni klik na mapo `stock-ai-lab` → **New File** → `.env`. Vsebina:
+
+```env
+DATABASE_URL=postgresql://UPORABNIK:GESLO@HOST:5432/postgres?sslmode=require
+```
+
+Primer:
+
+```env
+DATABASE_URL=postgresql://postgres.abcdefghijklmnop:MojeGeslo123@aws-1-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
+```
+
+> Če ima geslo posebne znake, jih zamenjaj: `#` → `%23`, `!` → `%21`, `*` → `%2A`, `@` → `%40`.
+
+### (B) `stock-ai-lab/frontend/.env.local` za frontend
+
+Desni klik na mapo `frontend` → **New File** → `.env.local`. Vsebina:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+### (C) `application-local.properties` za backend
+
+![alt text](README-slike/image-3.png) 
+
+
+1. Odpri **IntelliJ IDEA** → **Open** → izberi mapo `stock-ai-lab\backend` (samo `backend`, ne celega `stock-ai-lab`).
+2. Če te vpraša *Trust project*, klikni **Trust Project**.
+3. V drevesu projekta (levo) pojdi do:
+
+```
+backend\src\main\resources\
+```
+
+   Celotna pot je npr. `C:\RIRS\stock-ai-lab\backend\src\main\resources\`. V njej sta že `application.properties` in mapa `db`.
+
+4. Desni klik na `resources` → **New → File** → ime `application-local.properties`.
+5. Prilepi vanjo in vstavi svoje podatke iz koraka 3:
+
+```properties
+spring.datasource.url=jdbc:postgresql://HOST:5432/postgres?sslmode=require
+spring.datasource.username=UPORABNIK
+spring.datasource.password=GESLO
+```
+
+Primer:
+
+```properties
+spring.datasource.url=jdbc:postgresql://aws-1-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require
+spring.datasource.username=postgres.abcdefghijklmnop
+spring.datasource.password=MojeGeslo123
+```
+
+> Pri backendu je uporabnik ločen od URL-ja, na začetku pa je `jdbc:`. Pri Python `.env` je obratno, uporabnik in geslo sta v URL-ju.
+
+---
+
+## 5. Zagon backenda (prvič)
+
+### Preveri Java SDK v IntelliJ
+
+**File → Project Structure → Project → SDK**: izberi Javo **21 ali novejšo**. Če je ni na seznamu, izberi **Add SDK → Download JDK**.
+
+### Zaženi
+
+V IntelliJ odpri terminal (**View → Tool Windows → Terminal**). Biti moraš v mapi `backend`:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+Ob prvem zagonu Maven prenese vse knjižnice, kar traja nekaj minut. Flyway nato v bazi ustvari tabele. V logu poišči:
+
+```
+Successfully applied ... migration
+```
+
+### Če Maven nagaja
+
+Simptomi: v `pom.xml` je verzija obarvana rdeče, importi v Javi so rdeči ali zagon ne najde knjižnic.
+
+1. Odpri zavihek **Maven** (ikona **m** na desni strani) → klikni **Reload All Maven Projects** (ikona s krožnima puščicama).
+2. Če še vedno ne gre, v terminalu v mapi `backend`:
+
+```powershell
+.\mvnw.cmd dependency:resolve
+```
+
+3. Nato backend ponovno zaženi:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+### Preveri, ali backend dela
+
+V brskalniku odpri:
+
+```
+http://localhost:8080/api/actuator/health
+```
+
+Če vrne `{"status":"UP"}`, je vse OK. V Supabase pod **Table Editor** zdaj vidiš tabele.
+
+Backend ustavi s **`Ctrl + C`** v terminalu.
+
+---
+
+## 6. Uvoz podatkov (Python skripte)
+
+V **VS Code** odpri terminal v mapi `stock-ai-lab` (v rootu, ne v `backend` ali `frontend`).
+
+### Virtualno okolje in knjižnice
+
+```powershell
 python -m venv .venv
-.venv\Scripts\activate            # Windows  (Linux/macOS: source .venv/bin/activate)
+.venv\Scripts\activate
 pip install -r scripts/requirements.txt
- 
-cp .env.example .env              # vpiši DATABASE_URL
- 
-python scripts/fetch_prices.py    # → data/raw/prices.csv, data/raw/missing_tickers.txt
-python scripts/clean_data.py      # → data/clean/prices.csv, data/clean/report.csv
-python scripts/import_db.py       # → tabeli stock in stock_price + anonimne oznake
 ```
- 
-- Uvoz je idempotenten: ponoven zagon ne ustvari dvojnikov.
-- Anonimne oznake (S001 …) se dodelijo v naključnem vrstnem redu, da AI iz oznake ne more uganiti tickerja, in se ob ponovnem uvozu ne spremenijo.
-**Znana omejitev:** Yahoo Finance nima zgodovine delistanih podjetij, zato tickerji iz `missing_tickers.txt` niso uvoženi (delni survivorship bias).
- 
-Stanje po uvozu: <N> instrumentov, <M> cen, velikost baze <X> MB.
- 
-### 3. Frontend
- 
-```bash
+
+Ko je okolje aktivno, je na začetku vrstice v terminalu napis `(.venv)`.
+
+> Če PowerShell javi napako *"running scripts is disabled on this system"*, enkrat zaženi spodnji ukaz in ponovi `activate`:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
+### Zagon skript (po vrsti)
+
+```powershell
+python scripts/fetch_prices.py
+```
+Prenese cene z Yahoo Finance v `data/raw/prices.csv`. Traja nekaj minut.
+
+```powershell
+python scripts/clean_data.py
+```
+Očisti podatke v `data/clean/prices.csv` in ustvari poročilo `data/clean/report.csv`.
+
+```powershell
+python scripts/import_db.py
+```
+Uvozi podatke v Supabase (tabeli `stock` in `stock_price`) in dodeli anonimne oznake (S001 …).
+
+> Vrstni red je pomemben, ker vsaka skripta potrebuje rezultat prejšnje. Uvoz lahko poženeš večkrat brez dvojnikov.
+
+V Supabase **Table Editor** preveri, da imata tabeli `stock` in `stock_price` podatke.
+
+---
+## Prijava z Google (Supabase Auth)
+
+Enkratna nastavitev (skrivnosti niso v repozitoriju):
+
+1. Google Cloud Console → nov projekt → OAuth consent screen (External, testni uporabniki).
+2. Clients → Web application:
+   - Authorized JavaScript origins: `http://localhost:5173`
+   - Authorized redirect URI: `https://<ref>.supabase.co/auth/v1/callback`
+3. Supabase → Authentication → Providers → Google: vklopi, vpiši Client ID in Client secret.
+4. Supabase → Authentication → URL Configuration:
+   - Site URL `http://localhost:5173`
+   - Redirect URL `http://localhost:5173/**`
+5. Supabase → Project Settings → JWT Keys: projekt mora uporabljati asimetrične ključe
+   (JWKS na `https://<ref>.supabase.co/auth/v1/.well-known/jwks.json` ni prazen).
+
+## 7. Frontend (prvič)
+
+V terminalu VS Code:
+
+```powershell
 cd frontend
 npm install
-npm run dev                       # http://localhost:5173
 ```
+
+---
+
+## 8. Zagon celotne aplikacije
+
+Potrebuješ **dva terminala hkrati**.
+
+**Terminal 1: backend** (IntelliJ ali VS Code, mapa `stock-ai-lab\backend`):
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+**Terminal 2: frontend** (VS Code, mapa `stock-ai-lab\frontend`):
+
+```powershell
+npm run dev
+```
+
+V brskalniku odpri:
+
+```
+http://localhost:5173
+```
+
+Aplikacija bi morala prikazati seznam delnic.
+
+---
+
+## Kontrolni seznam
+
+- [ ] vsi ukazi v koraku 1 izpišejo verzijo
+- [ ] `.env`, `frontend/.env.local` in `application-local.properties` so ustvarjeni in izpolnjeni
+- [ ] http://localhost:8080/api/actuator/health vrne `UP`
+- [ ] tabele `stock` in `stock_price` v Supabase imajo podatke
+- [ ] http://localhost:5173 prikaže seznam delnic
+
+## Pogoste težave
+
+| Težava | Rešitev |
+|---|---|
+| `java`, `node` ali `python` *is not recognized* | program ni v PATH; ponovno namesti (pri Pythonu obkljukaj *Add to PATH*) in ponovno odpri VS Code |
+| backend: *password authentication failed* | napačen uporabnik ali geslo v `application-local.properties`; uporabnik mora biti `postgres.<ref>`, ne samo `postgres` |
+| backend: *connection timed out* ali *UnknownHost* | uporabljaš *Direct connection*; v Supabase izberi **Session pooler** |
+| skripta: *password authentication failed* | posebni znaki v geslu niso kodirani (glej korak 4A) |
+| *Port 8080 already in use* | backend že teče v drugem terminalu; ustavi ga s `Ctrl + C` |
+| frontend se odpre, a nima podatkov | backend ne teče ali pa `VITE_API_URL` v `frontend/.env.local` ni pravilen |
+
  
 ## Razvoj
  
