@@ -1,12 +1,15 @@
 package com.example.stocklab.controller;
 
+import com.example.stocklab.config.SecurityConfig;
 import com.example.stocklab.dto.PriceDto;
 import com.example.stocklab.dto.StockDto;
 import com.example.stocklab.service.StockService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(StockController.class)
+@Import(SecurityConfig.class)
 class StockControllerTest {
 
     @Autowired
@@ -28,6 +32,9 @@ class StockControllerTest {
 
     @MockitoBean
     StockService stockService;
+
+    @MockitoBean
+    JwtDecoder jwtDecoder;     // da test ne kliče Supabase JWKS
 
     @Test
     void list_vrneVseInstrumente() throws Exception {
