@@ -18,11 +18,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())             // REST API z Bearer žetoni
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // CORS preflight
-                        .requestMatchers("/error").permitAll()                      // sicer 404/400 postane 401
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/me/**", "/api/experiments/**").authenticated()
+                        .anyRequest().denyAll())
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
         return http.build();
     }
