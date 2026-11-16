@@ -7,7 +7,11 @@ export default function Header() {
 
   return (
     <header className="header">
-      <Link to="/" className="header__logo">StockLab</Link>
+      <nav className="header__nav">
+        <Link to="/" className="header__logo">StockLab</Link>
+        <Link to="/">Instrumenti</Link>
+        {session && <Link to="/nastavitve">Nastavitve</Link>}
+      </nav>
 
       <div className="header__auth">
         {loading ? null : session ? (

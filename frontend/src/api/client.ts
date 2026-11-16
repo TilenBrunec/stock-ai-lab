@@ -40,7 +40,15 @@ async function request<T>(
   });
 
   if (!res.ok) {
-    throw new ApiError(res.status, `${res.status} ${res.statusText}`);
+    // backend vrne {"message": "..."} (server.error.include-message=always)
+    let message = `${res.status} ${res.statusText}`;
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch {
+      // telo ni JSON
+    }
+    throw new ApiError(res.status, message);
   }
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
@@ -49,5 +57,8 @@ export const api = {
   stocks: (q?: string) => request<Stock[]>('GET', '/api/stocks', { params: { q } }),
   prices: (id: number, from?: string, to?: string) =>
     request<Price[]>('GET', `/api/stocks/${id}/prices`, { params: { from, to } }),
+
   me: () => request<Me>('GET', '/api/me'),
+  saveKey: (kljuc: string) => request<Me>('PUT', '/api/me/openrouter-key', { body: { kljuc } }),
+  deleteKey: () => request<Me>('DELETE', '/api/me/openrouter-key'),
 };

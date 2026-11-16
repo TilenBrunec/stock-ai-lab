@@ -11,10 +11,13 @@ export interface Price {
   datum: string;   // "2024-01-02"
   cena: number;
 }
+
 export interface Me {
   id: string;
   email: string;
   ime: string | null;
   slikaUrl: string | null;
   vloga: 'RAZISKOVALEC' | 'ADMINISTRATOR';
+  imaKljuc: boolean;
+  kljucZadnji4: string | null;
 }

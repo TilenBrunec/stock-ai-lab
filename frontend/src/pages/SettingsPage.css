@@ -1,0 +1,33 @@
+.settings { max-width: 700px; margin: 0 auto; padding: 24px 16px; }
+
+.settings__card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+.settings__card h2 { margin-top: 0; font-size: 1.1rem; }
+
+.settings__help { color: #555; font-size: 0.9rem; }
+.settings__none { color: #888; }
+
+.settings__form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.settings__form input {
+  flex: 1 1 260px;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.settings__form button {
+  padding: 8px 14px;
+  border: 1px solid #1f2937;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #fff;
+  cursor: pointer;
+}
+.settings__form button:disabled { opacity: 0.5; cursor: default; }
+.settings__form .settings__danger { background: #fff; color: #b00020; border-color: #b00020; }
+
+.settings__error { color: #b00020; }
+.settings__info { color: #1b7f3b; }
