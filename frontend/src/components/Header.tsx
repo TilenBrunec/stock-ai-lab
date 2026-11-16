@@ -10,6 +10,7 @@ export default function Header() {
       <nav className="header__nav">
         <Link to="/" className="header__logo">StockLab</Link>
         <Link to="/">Instrumenti</Link>
+        {session && <Link to="/eksperimenti/nov">Nov eksperiment</Link>}
         {session && <Link to="/nastavitve">Nastavitve</Link>}
       </nav>
 
