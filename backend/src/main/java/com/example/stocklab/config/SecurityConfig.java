@@ -14,17 +14,18 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())          // uporabi CorsConfig iz #12
-                .csrf(csrf -> csrf.disable())             // REST API z Bearer žetoni
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
-                        .requestMatchers("/api/me/**", "/api/experiments/**").authenticated()
-                        .anyRequest().denyAll())
-                .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
+            .cors(Customizer.withDefaults())          // uporabi CorsConfig
+            .csrf(csrf -> csrf.disable())             // REST API z Bearer žetoni
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()      // CORS preflight
+                .requestMatchers("/error").permitAll()                         // sicer 404/400 postane 401
+                .requestMatchers("/api/actuator/health").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/models").permitAll()
+                .requestMatchers("/api/me/**", "/api/experiments/**").authenticated()
+                .anyRequest().denyAll())
+            .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
         return http.build();
     }
 }
