@@ -10,6 +10,7 @@ interface AuthState {
   ime: string | null;
   slika: string | null;
   me: Me | null;
+  setMe: (me: Me | null) => void;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -32,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // po prijavi pokliči backend: ustvari uporabnika in vrne vlogo
+  // po prijavi pokliči backend: ustvari uporabnika in vrne vlogo ter stanje ključa
   useEffect(() => {
     if (!session) {
       setMe(null);
@@ -49,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ime: meta.full_name ?? meta.name ?? session?.user.email ?? null,
     slika: meta.avatar_url ?? meta.picture ?? null,
     me,
+    setMe,
     signIn: async () => {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
