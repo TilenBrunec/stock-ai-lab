@@ -5,6 +5,7 @@ import com.example.stocklab.dto.ExperimentDto;
 import com.example.stocklab.dto.ExperimentSummaryDto;
 import com.example.stocklab.model.Eksperiment;
 import com.example.stocklab.model.LlmModel;
+import com.example.stocklab.model.Status;
 import com.example.stocklab.model.Stock;
 import com.example.stocklab.model.Uporabnik;
 import com.example.stocklab.repository.EksperimentRepository;
@@ -104,6 +105,24 @@ public class ExperimentService {
     public ExperimentDto najdi(Jwt jwt, Long id) {
         return ExperimentDto.from(eksperimentRepository.findByIdAndUporabnikId(id, uporabnikId(jwt))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Eksperiment ne obstaja")));
+    }
+
+    /**
+     * #64: pripravi eksperiment na zagon (CAKA -> V_TEKU). Sam zagon izvede ExperimentRunner v ozadju,
+     * ko se ta transakcija potrdi.
+     */
+    @Transactional
+    public ExperimentDto zacni(Jwt jwt, Long id) {
+        Eksperiment e = eksperimentRepository.findByIdAndUporabnikId(id, uporabnikId(jwt))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Eksperiment ne obstaja"));
+        if (e.getStatus() != Status.CAKA) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Eksperiment je že zagnan");
+        }
+        if (!e.getUporabnik().imaKljuc()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Najprej v nastavitvah shrani OpenRouter ključ");
+        }
+        e.setStatus(Status.V_TEKU);
+        return ExperimentDto.from(e);
     }
 
     private Uporabnik prijavljen(Jwt jwt) {

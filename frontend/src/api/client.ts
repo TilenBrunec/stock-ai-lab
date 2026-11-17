@@ -85,4 +85,5 @@ export const api = {
     request<Experiment>('POST', '/api/experiments', { body }),
   experiments: () => request<ExperimentSummary[]>('GET', '/api/experiments'),
   experiment: (id: number) => request<Experiment>('GET', `/api/experiments/${id}`),
+  runExperiment: (id: number) => request<Experiment>('POST', `/api/experiments/${id}/run`),
 };

@@ -51,6 +51,12 @@ export interface Zagon {
   placljiv: boolean;
   status: Status;
   napaka: string | null;
+  // metrike so null, dokler zagon ni končan
+  koncnaVrednost: number | null;
+  zasluzek: number | null;
+  donos: number | null;         // %
+  cagr: number | null;          // %
+  delezPravilnih: number | null; // %
 }
 
 export interface Experiment {

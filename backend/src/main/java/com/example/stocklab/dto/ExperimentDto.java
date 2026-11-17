@@ -21,11 +21,24 @@ public record ExperimentDto(
         List<StockDto> instrumenti,
         List<ZagonDto> zagoni) {
 
-    public record ZagonDto(Long id, Integer modelId, String model, boolean placljiv, String status, String napaka) {
+    /** Zagon enega modela; metrike so null, dokler zagon ni končan. */
+    public record ZagonDto(
+            Long id,
+            Integer modelId,
+            String model,
+            boolean placljiv,
+            String status,
+            String napaka,
+            BigDecimal koncnaVrednost,
+            BigDecimal zasluzek,
+            BigDecimal donos,
+            BigDecimal cagr,
+            BigDecimal delezPravilnih) {
 
         static ZagonDto from(Zagon z) {
             return new ZagonDto(z.getId(), z.getModel().getId(), z.getModel().getIme(),
-                    z.getModel().isPlacljiv(), z.getStatus().name(), z.getNapaka());
+                    z.getModel().isPlacljiv(), z.getStatus().name(), z.getNapaka(),
+                    z.getKoncnaVrednost(), z.getZasluzek(), z.getDonos(), z.getCagr(), z.getDelezPravilnih());
         }
     }
 

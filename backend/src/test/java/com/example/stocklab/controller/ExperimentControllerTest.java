@@ -2,6 +2,7 @@ package com.example.stocklab.controller;
 
 import com.example.stocklab.config.SecurityConfig;
 import com.example.stocklab.dto.ExperimentDto;
+import com.example.stocklab.service.ExperimentRunner;
 import com.example.stocklab.service.ExperimentService;
 import com.example.stocklab.service.NeveljavniPodatkiException;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 class ExperimentControllerTest {
 
+    static final UUID USER = UUID.fromString("11111111-1111-1111-1111-111111111111");
+
     static final String TELO = """
             {"instrumentIds":[1,2],"odlocitveniDatum":"2018-01-02","letaZgodovine":3,
              "konecVrednotenja":"2023-01-02","kapital":10000,"modelIds":[1]}
@@ -41,12 +47,14 @@ class ExperimentControllerTest {
     @Autowired MockMvc mvc;
 
     @MockitoBean ExperimentService experimentService;
+    @MockitoBean ExperimentRunner experimentRunner;
     @MockitoBean JwtDecoder jwtDecoder;
 
-    static ExperimentDto dto() {
+    static ExperimentDto dto(String status) {
         return new ExperimentDto(5L, LocalDate.of(2018, 1, 2), 3, LocalDate.of(2023, 1, 2),
-                new BigDecimal("10000.00"), "CAKA", Instant.now(), List.of(),
-                List.of(new ExperimentDto.ZagonDto(10L, 1, "Gemma", false, "CAKA", null)));
+                new BigDecimal("10000.00"), status, Instant.now(), List.of(),
+                List.of(new ExperimentDto.ZagonDto(10L, 1, "Gemma", false, status, null,
+                        null, null, null, null, null)));
     }
 
     @Test
@@ -57,7 +65,7 @@ class ExperimentControllerTest {
 
     @Test
     void create_veljaven_vrne201InStatusCaka() throws Exception {
-        when(experimentService.create(any(), any())).thenReturn(dto());
+        when(experimentService.create(any(), any())).thenReturn(dto("CAKA"));
 
         mvc.perform(post("/api/experiments").with(jwt())
                         .contentType(MediaType.APPLICATION_JSON).content(TELO))
@@ -90,5 +98,33 @@ class ExperimentControllerTest {
     @Test
     void moji_brezZetona_vrne401() throws Exception {
         mvc.perform(get("/api/experiments")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void run_brezZetona_vrne401() throws Exception {
+        mvc.perform(post("/api/experiments/5/run")).andExpect(status().isUnauthorized());
+        verify(experimentRunner, never()).izvedi(any(), any());
+    }
+
+    @Test
+    void run_vrne202InZazeneVOzadju() throws Exception {
+        when(experimentService.zacni(any(), eq(5L))).thenReturn(dto("V_TEKU"));
+
+        mvc.perform(post("/api/experiments/5/run").with(jwt().jwt(j -> j.subject(USER.toString()))))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.status").value("V_TEKU"));
+
+        verify(experimentRunner).izvedi(5L, USER);
+    }
+
+    @Test
+    void run_zeZagnan_vrne409InNeZazene() throws Exception {
+        when(experimentService.zacni(any(), eq(5L)))
+                .thenThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Eksperiment je že zagnan"));
+
+        mvc.perform(post("/api/experiments/5/run").with(jwt()))
+                .andExpect(status().isConflict());
+
+        verify(experimentRunner, never()).izvedi(any(), any());
     }
 }
