@@ -9,9 +9,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface StockPriceRepository extends JpaRepository<StockPrice, StockPriceId> {
     List<StockPrice> findByIdStockIdAndIdDatumBetweenOrderByIdDatum(Long stockId, LocalDate from, LocalDate to);
+
+    /** Zadnja znana cena na dan ali pred njim (za vrednotenje, če na točen dan ni trgovanja). */
+    Optional<StockPrice> findFirstByIdStockIdAndIdDatumLessThanEqualOrderByIdDatumDesc(Long stockId, LocalDate datum);
 
     @Query("SELECT min(p.id.datum) FROM StockPrice p")
     LocalDate findMinDatum();
