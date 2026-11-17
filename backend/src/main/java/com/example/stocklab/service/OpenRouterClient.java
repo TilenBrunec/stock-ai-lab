@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Klici na OpenRouter API. Ključ uporabnika se nikoli ne izpiše v log. */
 @Component
@@ -103,15 +105,48 @@ public class OpenRouterClient {
 
         } catch (HttpStatusCodeException e) {
             int status = e.getStatusCode().value();
+            String razlog = sporocilo(e.getResponseBodyAsString());   // pravo sporočilo OpenRouterja
+            String dodatek = razlog == null ? "" : ": " + razlog;
             throw switch (status) {
                 case 401 -> new LlmKlicException("OpenRouter ključ ni veljaven", false);
-                case 402 -> new LlmKlicException("Na OpenRouter računu ni dovolj kreditov", false);
-                case 404 -> new LlmKlicException("Model " + model + " na OpenRouterju ne obstaja", false);
-                case 429 -> new LlmKlicException("Omejitev zahtevkov pri OpenRouterju (rate limit)", true);
-                default -> new LlmKlicException("OpenRouter je vrnil napako " + status, status >= 500);
+                case 402 -> new LlmKlicException("Na OpenRouter računu ni dovolj kreditov" + dodatek, false);
+                case 404 -> new LlmKlicException("Model " + model + " na OpenRouterju ne obstaja" + dodatek, false);
+                case 429 -> new LlmKlicException("Omejitev zahtevkov (rate limit)" + dodatek, true,
+                        retryAfterMs(e.getResponseHeaders() == null ? null
+                                : e.getResponseHeaders().getFirst("Retry-After")));
+                default -> new LlmKlicException("OpenRouter je vrnil napako " + status + dodatek, status >= 500);
             };
         } catch (RestClientException e) {
             throw new LlmKlicException("OpenRouter ni dosegljiv", true);
+        }
+    }
+
+    private static final Pattern MESSAGE = Pattern.compile("\"(?:raw|message)\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.){1,300})\"");
+
+    /**
+     * Izlušči berljiv razlog iz telesa napake, npr.
+     * {"error":{"message":"Rate limit exceeded: free-models-per-day","metadata":{"raw":"... rate-limited upstream ..."}}}
+     * "raw" (razlog ponudnika) ima prednost pred splošnim "message".
+     */
+    static String sporocilo(String telo) {
+        if (telo == null || telo.isBlank()) return null;
+        String message = null;
+        Matcher m = MESSAGE.matcher(telo);
+        while (m.find()) {
+            String v = m.group(1).replace("\\\"", "\"").replace("\\n", " ");
+            if (telo.startsWith("\"raw\"", m.start())) return v;
+            if (message == null) message = v;
+        }
+        return message;
+    }
+
+    /** Retry-After v sekundah -> ms (največ 60 s); brez glave 0. */
+    static long retryAfterMs(String glava) {
+        if (glava == null) return 0;
+        try {
+            return Math.min(60_000, Long.parseLong(glava.trim()) * 1000);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }

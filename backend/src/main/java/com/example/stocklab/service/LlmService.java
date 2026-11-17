@@ -37,7 +37,12 @@ public class LlmService {
                 if (e instanceof LlmKlicException k && !k.isPonovljiva()) {
                     break;                       // npr. neveljaven ključ ali ni kreditov - ponovitev ne pomaga
                 }
-                pocakaj(poskus * 3000L);         // OpenRouter rate limit
+                if (poskus <= MAX_PONOVITEV) {
+                    // rate limit: počakaj, kolikor zahteva OpenRouter (Retry-After), sicer 10 s, 20 s
+                    long privzeto = poskus * 10_000L;
+                    long zahtevano = e instanceof LlmKlicException lk ? lk.getPocakajMs() : 0;
+                    pocakaj(Math.max(privzeto, zahtevano));
+                }
             }
         }
         throw new LlmKlicException(zadnjaNapaka, false);
