@@ -115,3 +115,28 @@
 .exp__status--v_teku { background: #e3f2fd; color: #0d47a1; }
 .exp__status--koncano { background: #e8f5e9; color: #1b5e20; }
 .exp__status--neuspesno { background: #fdecea; color: #b00020; }
+
+/* zagon in rezultati */
+.exp__actions { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.exp .exp__run {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #1f2937;
+  border-color: #1f2937;
+  color: #fff;
+}
+.exp__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.exp__up { color: #1b7f3b; }
+.exp__down { color: #b00020; }
+.exp__spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #90caf9;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: exp-spin 0.8s linear infinite;
+  vertical-align: -2px;
+  margin-right: 6px;
+}
+@keyframes exp-spin { to { transform: rotate(360deg); } }
